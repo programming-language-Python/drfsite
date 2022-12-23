@@ -6,15 +6,18 @@ from rest_framework.renderers import JSONRenderer
 
 from women.models import Women
 
+
 # короткая форма записи
 class WomenSerializer(serializers.ModelSerializer):
+    # user - атрибут из модели. Заполняем следующим образом
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault)
+
     class Meta:
         model = Women
         # какие поля из БД будем возвращать клиенту
         # fields = ('title', 'content', 'cat')
         # все поля
         fields = '__all__'
-
 
 # длинная форма записи
 # class WomenSerializer(serializers.Serializer):

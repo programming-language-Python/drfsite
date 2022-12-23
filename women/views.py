@@ -4,47 +4,69 @@ from django.shortcuts import render
 # Create your views here.
 from rest_framework import generics, viewsets, mixins
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
 from women.models import Women, Category
+from women.permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from women.serializers import WomenSerializer
 
 
-# то же самое что и с параметром viewsets.ModelViewSet, только без возможности удалить
-class WomenViewSet(mixins.CreateModelMixin,
-                   mixins.RetrieveModelMixin,
-                   mixins.UpdateModelMixin,
-                   mixins.ListModelMixin,
-                   GenericViewSet):
-    # ссылает на список записей возращаемый клиенту
-    # queryset = Women.objects.all()
-    # сериализатор, который будет применять к queryset
+# для наглядности разбили на классы для просмотра работы permission
+class WomenAPIList(generics.ListCreateAPIView):
+    queryset = Women.objects.all()
     serializer_class = WomenSerializer
+    # должна быть коллекция или список
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
-    # переопределение метода
-    def get_queryset(self):
-        pk = self.kwargs.get('pk')
 
-        if not pk:
-            # вывод первых 3 записей
-            return Women.objects.all()[:3]
+class WomenAPIUpdate(generics.RetrieveUpdateAPIView):
+    queryset = Women.objects.all()
+    serializer_class = WomenSerializer
+    permission_classes = (IsOwnerOrReadOnly,)
 
-        return Women.objects.filter(pk=pk)
-    # создание своего машрута
-    # detail=True возращается одна запись
-    # имя машрута берётся на основе имени метода
-    # @action(methods=['get'], detail=True)
-    # def category(self, requests):
-    #     cats = Category.objects.all()
-    #     return Response({'cats': [c.name for c in cats]})
 
-    # http://127.0.0.1:8000/api/v1/women/1/category/
-    @action(methods=['get'], detail=True)
-    def category(self, requests, pk=None):
-        cats = Category.objects.get(pk=pk)
-        return Response({'cats': cats.name})
+class WomenAPIDestroy(generics.RetrieveDestroyAPIView):
+    queryset = Women.objects.all()
+    serializer_class = WomenSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+
+# # то же самое что и с параметром viewsets.ModelViewSet, только без возможности удалить
+# class WomenViewSet(mixins.CreateModelMixin,
+#                    mixins.RetrieveModelMixin,
+#                    mixins.UpdateModelMixin,
+#                    mixins.ListModelMixin,
+#                    GenericViewSet):
+#     # ссылает на список записей возращаемый клиенту
+#     # queryset = Women.objects.all()
+#     # сериализатор, который будет применять к queryset
+#     serializer_class = WomenSerializer
+#
+#     # переопределение метода
+#     def get_queryset(self):
+#         pk = self.kwargs.get('pk')
+#
+#         if not pk:
+#             # вывод первых 3 записей
+#             return Women.objects.all()[:3]
+#
+#         return Women.objects.filter(pk=pk)
+#
+#     # создание своего машрута
+#     # detail=True возращается одна запись
+#     # имя машрута берётся на основе имени метода
+#     # @action(methods=['get'], detail=True)
+#     # def category(self, requests):
+#     #     cats = Category.objects.all()
+#     #     return Response({'cats': [c.name for c in cats]})
+#
+#     # http://127.0.0.1:8000/api/v1/women/1/category/
+#     @action(methods=['get'], detail=True)
+#     def category(self, requests, pk=None):
+#         cats = Category.objects.get(pk=pk)
+#         return Response({'cats': cats.name})
 
 # # только для чтения
 # class WomenViewSet(viewsets.ReadOnlyModelViewSet):
