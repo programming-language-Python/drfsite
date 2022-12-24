@@ -2,3 +2,7 @@
 ViewSets: https://www.django-rest-framework.org/api-guide/viewsets/
 Routers: https://www.django-rest-framework.org/api-guide/routers/
 Ограничение доступа: https://www.django-rest-framework.org/api-guide/permissions/
+Аутентификация: https://www.django-rest-framework.org/api-guide/authentication/
+Djoser: https://djoser.readthedocs.io/en/latest/
+Simple JWT: https://django-rest-framework-simplejwt.readthedocs.io/en/latest/getting_started.html
+Пагинация: https://www.django-rest-framework.org/api-guide/pagination/

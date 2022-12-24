@@ -9,6 +9,7 @@ class IsAdminOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             # предоставили всем права
             return True
+
         # доступ для админа
         return bool(request.user and request.user.is_staff)
 
